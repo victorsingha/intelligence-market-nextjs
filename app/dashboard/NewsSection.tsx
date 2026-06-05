@@ -12,8 +12,9 @@ type Article = {
 };
 
 type NewsData = {
-  overall: Article[];
-  indian: Article[];
+  articles: Article[];
+  googleNews: Article[];
+  total: number;
 };
 
 function formatDate(iso: string) {
@@ -101,16 +102,18 @@ export default function NewsSection() {
         <div className="flex flex-col gap-8">
           <div>
             <h3 className="text-[20px] leading-[1.4] tracking-normal text-[var(--ink)] mb-4" style={{ fontWeight: 400 }}>
-              Overall markets
+              Latest news
             </h3>
-            <NewsRow articles={data.overall} emptyMessage="No overall market news available." />
+            <NewsRow articles={data.articles} emptyMessage="No market news available." />
           </div>
-          <div>
-            <h3 className="text-[20px] leading-[1.4] tracking-normal text-[var(--ink)] mb-4" style={{ fontWeight: 400 }}>
-              Indian stocks
-            </h3>
-            <NewsRow articles={data.indian} emptyMessage="No Indian stock market news available." surface />
-          </div>
+          {data.googleNews.length > 0 && (
+            <div>
+              <h3 className="text-[20px] leading-[1.4] tracking-normal text-[var(--ink)] mb-4" style={{ fontWeight: 400 }}>
+                Google News
+              </h3>
+              <NewsRow articles={data.googleNews} emptyMessage="" surface />
+            </div>
+          )}
         </div>
       )}
     </section>

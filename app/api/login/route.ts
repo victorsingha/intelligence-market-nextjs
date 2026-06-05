@@ -2,9 +2,9 @@ const DEMO_USERS = [
   {
     email: "admin@carbon.cloud",
     password: "carbon2024",
-    name: "Ada Lovelace",
+    name: "Victor Singha",
     role: "Administrator",
-    initials: "AL",
+    initials: "VS",
   },
   {
     email: "demo@carbon.cloud",

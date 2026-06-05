@@ -1,11 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
-import StockChart, { generateData, type ChartData } from "./StockChart";
+import StockChart, { generateData } from "./StockChart";
 import StockAnalysis from "./StockAnalysis";
-import NewsSection from "./NewsSection";
+import Header from "../components/Header";
 
 const STOCKS = [
   { symbol: "AAPL", name: "Apple Inc." },
@@ -20,39 +19,12 @@ const STOCKS = [
   { symbol: "JNJ", name: "Johnson & Johnson" },
 ];
 
-type User = {
-  email: string;
-  name: string;
-  role: string;
-  initials: string;
-};
-
 const USER_KEY = "carbon:user";
-const TOKEN_KEY = "carbon:token";
-const AUTH_EVENT = "carbon:auth";
-
-function readUserFromStorage(): User | null {
-  if (typeof window === "undefined") return null;
-  const raw =
-    window.localStorage.getItem(USER_KEY) ??
-    window.sessionStorage.getItem(USER_KEY);
-  if (!raw) return null;
-  try { return JSON.parse(raw) as User; } catch { return null; }
-}
-
-function notifyAuthChange() {
-  if (typeof window !== "undefined") {
-    window.dispatchEvent(new Event(AUTH_EVENT));
-  }
-}
-
-
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<{ name: string; role: string } | null>(null);
   const [ready, setReady] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState("AAPL");
 
@@ -69,26 +41,12 @@ export default function DashboardPage() {
     const raw =
       window.localStorage.getItem(USER_KEY) ??
       window.sessionStorage.getItem(USER_KEY);
-    if (raw) {
-      try { setUser(JSON.parse(raw) as User); } catch {}
-    }
-    setReady(true);
-  }, []);
-
-  useEffect(() => {
-    function onAuthChange() {
-      const raw =
-        window.localStorage.getItem(USER_KEY) ??
-        window.sessionStorage.getItem(USER_KEY);
-      if (!raw) { setUser(null); return; }
-      try { setUser(JSON.parse(raw)); } catch { setUser(null); }
-    }
-    window.addEventListener("storage", onAuthChange);
-    window.addEventListener(AUTH_EVENT, onAuthChange);
-    return () => {
-      window.removeEventListener("storage", onAuthChange);
-      window.removeEventListener(AUTH_EVENT, onAuthChange);
-    };
+    queueMicrotask(() => {
+      if (raw) {
+        try { setUser(JSON.parse(raw)); } catch {}
+      }
+      setReady(true);
+    });
   }, []);
 
   useEffect(() => {
@@ -101,25 +59,6 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--canvas)]">
         <p className="text-[14px] tracking-[0.16px] text-[var(--ink-muted)]">
-          Loading…
-        </p>
-      </div>
-    );
-  }
-
-  function onLogout() {
-    window.localStorage.removeItem(USER_KEY);
-    window.localStorage.removeItem(TOKEN_KEY);
-    window.sessionStorage.removeItem(USER_KEY);
-    window.sessionStorage.removeItem(TOKEN_KEY);
-    notifyAuthChange();
-    window.location.href = "/";
-  }
-
-  if (user === null) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--canvas)]">
-        <p className="text-[14px] tracking-[0.16px] text-[var(--ink-muted)]">
           Redirecting to sign in…
         </p>
       </div>
@@ -128,26 +67,10 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="topbar flex items-center px-6" style={{ borderBottom: "none" }}>
-        <div className="flex items-center w-full">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-3 text-[var(--ink)] no-underline"
-            aria-label="Intelligence Markets"
-          >
-            <span className="text-[14px] font-semibold tracking-[0.16px]">
-              Intelligence Markets
-            </span>
-          </Link>
-          <nav className="ml-auto flex items-center gap-2" aria-label="Primary">
-          </nav>
-          <div className="ml-4 flex items-center gap-3">
-            <UserMenu user={user} onLogout={onLogout} open={menuOpen} setOpen={setMenuOpen} />
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="flex-1 bg-[var(--canvas)] px-6 py-12">
+        <div className="max-w-[1200px] mx-auto">
         <p className="text-[13px] leading-[1.5] mb-8 flex items-center gap-3 text-[var(--ink-muted)]">
           <span className="text-[11px] leading-[1.33] tracking-[0.32px] uppercase font-semibold px-2 py-0.5" style={{ backgroundColor: "var(--primary)", color: "var(--on-primary)" }}>
             DEMO
@@ -157,7 +80,7 @@ export default function DashboardPage() {
 
         <section className="mb-8" aria-label="Welcome">
           <p className="text-[14px] leading-[1.29] tracking-[0.16px] text-[var(--ink-muted)] mb-3">
-            {greeting()} · {user.role}
+            {greeting()} · {user!.role}
           </p>
           <h1
             className="text-[42px] sm:text-[60px] leading-[1.17] tracking-[-0.4px] text-[var(--ink)] mb-6"
@@ -251,85 +174,9 @@ export default function DashboardPage() {
             </div>
           </section>
         </div>
-
-        <NewsSection />
+        </div>
       </main>
     </div>
-  );
-}
-
-function UserMenu({
-  user,
-  onLogout,
-  open,
-  setOpen,
-}: {
-  user: User;
-  onLogout: () => void;
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 btn-ghost !min-h-0 !py-1 !px-2"
-        aria-haspopup="menu"
-        aria-expanded={open}
-      >
-        <span
-          className="w-8 h-8 inline-flex items-center justify-center bg-[var(--ink)] text-[var(--on-primary)] text-[12px] font-semibold tracking-[0.32px]"
-          aria-hidden="true"
-        >
-          {user.initials}
-        </span>
-        <span className="hidden sm:inline text-[14px] text-[var(--ink)]">
-          {user.name}
-        </span>
-        <Caret open={open} />
-      </button>
-      {open && (
-        <div
-          role="menu"
-          className="absolute right-0 top-full mt-1 min-w-[220px] bg-[var(--canvas)] border border-[var(--hairline-strong)] z-10"
-        >
-          <div className="px-4 py-3 border-b border-[var(--hairline)]">
-            <p className="text-[14px] text-[var(--ink)]">{user.name}</p>
-            <p className="text-[12px] text-[var(--ink-muted)] mt-0.5">{user.email}</p>
-          </div>
-          <Link href="#profile" role="menuitem" className="block px-4 py-3 text-[14px] text-[var(--ink)] hover:bg-[var(--surface-1)]">
-            Profile
-          </Link>
-          <Link href="#settings" role="menuitem" className="block px-4 py-3 text-[14px] text-[var(--ink)] hover:bg-[var(--surface-1)]">
-            Settings
-          </Link>
-          <button
-            type="button"
-            role="menuitem"
-            onClick={onLogout}
-            className="w-full text-left px-4 py-3 text-[14px] text-[var(--primary)] hover:bg-[var(--surface-1)] border-t border-[var(--hairline)]"
-          >
-            Sign out
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function Caret({ open }: { open: boolean }) {
-  return (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 12 12"
-      aria-hidden="true"
-      focusable="false"
-      style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 80ms" }}
-    >
-      <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" />
-    </svg>
   );
 }
 

@@ -79,7 +79,14 @@ export default function StockChart({ symbol, data }: { symbol: string; data: Cha
     });
 
     series.setData(data as any);
-    chart.timeScale().fitContent();
+    const lastTime = data[data.length - 1]?.time;
+    if (lastTime) {
+      const firstIndex = Math.max(0, data.length - 80);
+      const firstTime = data[firstIndex].time;
+      chart.timeScale().setVisibleRange({ from: firstTime, to: lastTime } as any);
+    } else {
+      chart.timeScale().fitContent();
+    }
 
     const interval = setInterval(() => {
       const last = data[data.length - 1];
