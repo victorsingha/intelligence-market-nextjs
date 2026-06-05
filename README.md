@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="opencode.svg" alt="opencode" width="80" />
+  <img src="https://raw.githubusercontent.com/victorsingha/intelligence-market-nextjs/master/public/opencode.svg" alt="opencode" width="80" />
   <br />
   <br />
   <img src="https://img.shields.io/badge/Next.js%2016-000000?style=flat-square&logo=next.js&logoColor=white" alt="Next.js 16" />
