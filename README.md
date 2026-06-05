@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/anomalyco/opencode/main/assets/logo.svg" alt="opencode" width="80" />
+  <img src="opencode.svg" alt="opencode" width="80" />
   <br />
   <br />
   <img src="https://img.shields.io/badge/Next.js%2016-000000?style=flat-square&logo=next.js&logoColor=white" alt="Next.js 16" />
