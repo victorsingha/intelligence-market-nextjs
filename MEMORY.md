@@ -31,16 +31,18 @@ nextjs-app/
 │  ├─ page.tsx               # Home / landing: hero pitching stock analysis + Sign in / Open console CTAs.
 │  ├─ login/
 │  │  └─ page.tsx            # 'use client' login (no header/footer): form POSTs /api/login, redirects to /dashboard.
+│  ├─ components/
+│  │  └─ Header.tsx          # 'use client' shared header: brand, page nav, auto-auth UserMenu.
 │  ├─ dashboard/
-│  │  ├─ page.tsx            # 'use client' dashboard (minimal topbar, no footer): portfolio overview, market movers, watchlists.
-│  │  └─ StockChart.tsx      # 'use client' real-time candlestick chart (lightweight-charts by TradingView).
+│  │  ├─ page.tsx            # 'use client' dashboard (shared Header): stock search, candlestick chart, analysis.
+│  │  └─ StockChart.tsx      # 'use client' candlestick chart (lightweight-charts, 80-bar visible range).
 │  ├─ news/
-│  │  └─ page.tsx            # 'use client' news page: fetches from /api/news, renders article list.
+│  │  └─ page.tsx            # 'use client' news page: search, time/topic/region chips, expandable filters, article grid.
 │  └─ api/
 │     ├─ login/
 │     │  └─ route.ts         # POST /api/login — demo creds; GET lists creds for testing.
 │     └─ news/
-│        └─ route.ts         # GET /api/news — fetches BBC Business + Fox Business RSS, returns JSON.
+│        └─ route.ts         # GET /api/news — Google News RSS + existing feeds; supports country, language, search, exclude, urlContains, time.
 ├─ public/                   # Static assets.
 ├─ scripts/
 │  └─ dev.cjs                # Custom dev runner: filters out "Network:" line only.
@@ -55,11 +57,11 @@ nextjs-app/
 | ------------ | -------------- | -------------------------------------------------------------- |
 | `/`          | Static page    | Landing with stock analysis hero + Sign in / Open console CTAs. |
 | `/login`     | Client page    | Minimal split-panel login (no header/footer). POSTs `/api/login`. |
-| `/dashboard` | Client page    | Post-login dashboard (minimal topbar, no footer) with real-time candlestick chart, stock market data, portfolio, watchlists. |
-| `/news`      | Client page    | Market news page. Fetches from `/api/news`.                 |
+| `/dashboard` | Client page    | Post-login dashboard (shared Header) with stock search, candlestick chart, analysis. |
+| `/news`      | Client page    | News page with search, time/topic/region chips, expandable filters (country, language, exclude, urlContains), article grid. |
 | `POST /api/login` | Route handler | Demo creds; returns `{ success, user, token, issuedAt }`.   |
 | `GET  /api/login` | Route handler | Lists the demo credentials (for testing only).             |
-| `GET  /api/news`  | Route handler | Proxies BBC Business + Fox Business RSS feeds as JSON.   |
+| `GET  /api/news`  | Route handler | Google News RSS + BBC/Fox/Moneycontrol/ET/Livemint feeds. Query params: country, language, search, exclude, urlContains, time. |
 
 ### Auth Flow
 
@@ -75,7 +77,7 @@ nextjs-app/
 
 | Email                  | Password    | Name          | Role           |
 | ---------------------- | ----------- | ------------- | -------------- |
-| `admin@carbon.cloud`   | `carbon2024`| Ada Lovelace  | Administrator  |
+| `admin@carbon.cloud`   | `carbon2024`| Victor Singha | Administrator  |
 | `demo@carbon.cloud`    | `demo1234`  | Demo User     | Member         |
 
 ### Conventions
@@ -145,5 +147,5 @@ npm run lint   # eslint
 - `GET /api/login` exposes the demo credentials list — remove before any non-demo deploy.
 - No `/signup` route yet; "Create account" links point to `#signup`.
 - No tests yet. Add Playwright/Vitest when needed.
-- `/api/news` depends on external RSS feeds (BBC, Fox Business) — may fail if feeds change or are blocked.
+- `/api/news` depends on external RSS feeds (Google News, BBC, Fox Business) — may fail if feeds change or are blocked.
 
