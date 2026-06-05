@@ -1,0 +1,19 @@
+
+> nextjs-app@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.7 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.29.120:3000
+✓ Ready in 729ms
+
+○ Compiling / ...
+ GET / 200 in 234ms (next.js: 105ms, application-code: 129ms)
+ GET /login 200 in 796ms (next.js: 734ms, application-code: 61ms)
+ POST /api/login 200 in 1137ms (next.js: 499ms, application-code: 638ms)
+ GET /dashboard 200 in 371ms (next.js: 341ms, application-code: 30ms)
+ GET /api/users 200 in 964ms (next.js: 920ms, application-code: 45ms)
+ GET /api/health 200 in 1536ms (next.js: 1528ms, application-code: 8ms)
+ GET /scalar 200 in 218ms (next.js: 212ms, application-code: 6ms)
+ GET /api/users/1 200 in 1666ms (next.js: 1657ms, application-code: 8ms)
+ GET /api/products 200 in 90ms (next.js: 85ms, application-code: 6ms)
