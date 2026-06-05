@@ -42,6 +42,8 @@ nextjs-app/
 │     └─ news/
 │        └─ route.ts         # GET /api/news — fetches BBC Business + Fox Business RSS, returns JSON.
 ├─ public/                   # Static assets.
+├─ scripts/
+│  └─ dev.cjs                # Custom dev runner: filters out "Network:" line only.
 ├─ DESIGN.md                 # Source of truth for the Carbon design system used here.
 ├─ MEMORY.md                 # This file.
 └─ package.json              # Scripts: dev, build, start, lint.
@@ -90,7 +92,7 @@ nextjs-app/
 ### Scripts
 
 ```bash
-npm run dev    # next dev (Turbopack)
+npm run dev    # scripts/dev.cjs → next dev (Turbopack). Filters out "Network:" line.
 npm run build  # next build (Turbopack)
 npm run start  # next start
 npm run lint   # eslint
